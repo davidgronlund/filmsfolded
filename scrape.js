@@ -1,6 +1,5 @@
 const scrapeIt = require("scrape-it");
 const jsonfile = require("jsonfile");
-const jssearch = require("js-search");
 
 const file = "reviews.json";
 
@@ -35,16 +34,6 @@ const scrape = (paginationKey, loadAll) => {
     }
     console.log(reviews.length);
   });
-  createIndex(reviews);
-}
-
-const createIndex = reviews => {
-  var search = new jssearch.Search('movie');
-  search.addIndex('heading');
-  search.addIndex('date');
-  search.addIndex('content');
-  search.addIndex('id');
-  search.addDocuments(reviews);
 };
 
 const save = reviews => {
