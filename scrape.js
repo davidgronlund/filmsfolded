@@ -1,10 +1,12 @@
 const scrapeIt = require("scrape-it");
 const jsonfile = require("jsonfile");
+const jssearch = require("js-search");
 
 const file = "reviews.json";
+
 let reviews = [];
 
-function scrape(paginationKey, loadAll) {
+const scrape = (paginationKey, loadAll) => {
   const url =
     "https://www.imdb.com/user/ur0643062/reviews/_ajax?sort=alphabeticalTitle&dir=desc";
   scrapeIt(`${url}&paginationKey=${paginationKey}`, {
@@ -26,14 +28,24 @@ function scrape(paginationKey, loadAll) {
     }
   }).then(({ data, response }) => {
     reviews = reviews.concat(data.reviews);
-    if (data.loadMoreData && loadAll && reviews.length < 600) {
+    if (data.loadMoreData && loadAll && reviews.length < 100) {
       scrape(data.loadMoreData, true);
     } else {
-        save(reviews);
+      save(reviews);
     }
     console.log(reviews.length);
   });
+  createIndex(reviews);
 }
+
+const createIndex = reviews => {
+  var search = new jssearch.Search('movie');
+  search.addIndex('heading');
+  search.addIndex('date');
+  search.addIndex('content');
+  search.addIndex('id');
+  search.addDocuments(reviews);
+};
 
 const save = reviews => {
   if (reviews) {
@@ -43,4 +55,4 @@ const save = reviews => {
   }
 };
 
-scrape("", true);
+module.exports = scrape;
