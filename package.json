@@ -9,6 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/node": "^10.12.18",
+    "express": "^4.16.4",
+    "jsonfile": "^5.0.0",
     "scrape-it": "^5.1.4"
   }
 }

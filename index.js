@@ -1,31 +1,46 @@
-const scrapeIt = require("scrape-it")
+const scrapeIt = require("scrape-it");
+const jsonfile = require("jsonfile");
 
+const file = "reviews.json";
 let reviews = [];
 
-function scrapeAllOnce(paginationKey) {
-    const url = "https://www.imdb.com/user/ur0643062/reviews/_ajax?sort=alphabeticalTitle&dir=desc";
-    scrapeIt(`${url}&paginationKey=${paginationKey}`, {
-        reviews: {
-            listItem: ".lister-item",
-            data: {
-                title: ".lister-item-header a",
-                heading: ".lister-item-content .title",
-                date: ".display-name-date",
-                content: ".text",
-            }
-        },
-        loadMoreData: {
-            selector: ".load-more-data",
-            attr: "data-key" 
+function scrape(paginationKey, loadAll) {
+  const url =
+    "https://www.imdb.com/user/ur0643062/reviews/_ajax?sort=alphabeticalTitle&dir=desc";
+  scrapeIt(`${url}&paginationKey=${paginationKey}`, {
+    reviews: {
+      listItem: ".lister-item",
+      data: {
+        movie: ".lister-item-header a",
+        heading: ".lister-item-content .title",
+        date: ".display-name-date",
+        content: ".text",
+        id: {
+          attr: "data-review-id"
         }
-    }).then(({ data, response }) => {
-        console.log(`Status Code: ${response.statusCode}`);
-        reviews = reviews.concat(data.reviews);
-        if(data.loadMoreData) {
-            scrapeData(data.loadMoreData);
-        }
-        console.log(reviews.length);
-    })    
+      }
+    },
+    loadMoreData: {
+      selector: ".load-more-data",
+      attr: "data-key"
+    }
+  }).then(({ data, response }) => {
+    reviews = reviews.concat(data.reviews);
+    if (data.loadMoreData && loadAll && reviews.length < 600) {
+      scrape(data.loadMoreData, true);
+    } else {
+        save(reviews);
+    }
+    console.log(reviews.length);
+  });
 }
 
-scrapeAllOnce("");
+const save = reviews => {
+  if (reviews) {
+    jsonfile.writeFile(file, reviews, err => {
+      console.log(err);
+    });
+  }
+};
+
+scrape("", true);
