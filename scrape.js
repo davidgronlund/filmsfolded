@@ -32,7 +32,6 @@ const scrape = (paginationKey, loadAll) => {
     } else {
       save(reviews);
     }
-    console.log(reviews.length);
   });
 };
 
