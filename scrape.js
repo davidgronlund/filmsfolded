@@ -1,9 +1,11 @@
 const scrapeIt = require("scrape-it");
-const jsonfile = require("jsonfile");
+const low = require("lowdb");
+const FileSync = require("lowdb/adapters/FileSync");
 
-const file = "reviews.json";
+const adapter = new FileSync("db.json");
+const db = low(adapter);
 
-let reviews = [];
+db.defaults({ reviews: [] }).write();
 
 const scrape = (paginationKey, loadAll) => {
   const url =
@@ -26,21 +28,15 @@ const scrape = (paginationKey, loadAll) => {
       attr: "data-key"
     }
   }).then(({ data, response }) => {
-    reviews = reviews.concat(data.reviews);
+    data.reviews.map(r => {
+      db.get("reviews")
+        .push(r)
+        .write();
+    });
     if (data.loadMoreData && loadAll && reviews.length < 100) {
       scrape(data.loadMoreData, true);
-    } else {
-      save(reviews);
     }
   });
 };
-
-const save = reviews => {
-  if (reviews) {
-    jsonfile.writeFile(file, reviews, err => {
-      console.log(err);
-    });
-  }
-};
-
+// scrape("", false);
 module.exports = scrape;
