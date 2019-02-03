@@ -7,10 +7,10 @@ const lodash = require("lodash");
 const adapter = new FileSync("./db.json");
 const db = low(adapter);
 
-router.get("/", function(req, res, next) {
+router.get("/search", function(req, res, next) {
   const reviews = db
     .get("reviews")
-    .sortBy("date")
+    .filter({ movie: "Zodiac" })
     .value();
   res.render("index", {
     title: "Films folded",

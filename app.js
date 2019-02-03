@@ -44,6 +44,7 @@
 // module.exports = app;
 
 const indexRouter = require("./routes/index");
+const searchRouter = require("./routes/search");
 
 const express = require("express");
 const app = express();
@@ -51,9 +52,14 @@ const port = 3000;
 
 const path = require("path");
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, "public")));
+
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 
 app.use("/", indexRouter);
+app.use("/search", searchRouter);
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));

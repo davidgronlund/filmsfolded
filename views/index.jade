@@ -1,7 +1,15 @@
 extends layout
 
 block content
-  h1= title
-  ul
-  each review in reviews
-    li= review.heading
+  div(class="content")
+    h1(class="heading-primary")= title
+    form(method='POST' action='/search')
+      div.form-group
+        label(for='search') Search:
+        input#name.form-control(type='text', placeholder='Search' name='search')
+        button.btn.btn-primary(type='submit') Search
+    ul
+    each review in reviews
+      li= review.heading
+    else 
+      li No result found

@@ -7,9 +7,9 @@ const db = low(adapter);
 
 db.defaults({ reviews: [] }).write();
 
+let count = 0;
 const scrape = (paginationKey, loadAll) => {
-  const url =
-    "https://www.imdb.com/user/ur0643062/reviews/_ajax?sort=alphabeticalTitle&dir=desc";
+  const url = "https://www.imdb.com/user/ur0643062/reviews/_ajax";
   scrapeIt(`${url}&paginationKey=${paginationKey}`, {
     reviews: {
       listItem: ".lister-item",
@@ -33,10 +33,12 @@ const scrape = (paginationKey, loadAll) => {
         .push(r)
         .write();
     });
-    if (data.loadMoreData && loadAll && reviews.length < 100) {
+    count += data.reviews.length;
+    console.log(count);
+    if (data.loadMoreData && loadAll && count.length < 100) {
       scrape(data.loadMoreData, true);
     }
   });
 };
-// scrape("", false);
+scrape("", true);
 module.exports = scrape;
